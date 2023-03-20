@@ -152,27 +152,21 @@ static LPVOID FindNextFreeRegion(LPVOID pAddress, LPVOID pMaxAddr, DWORD dwAlloc
 #endif
 
 //-------------------------------------------------------------------------
-static PMEMORY_BLOCK GetMemoryBlock(LPVOID pOrigin)
+PMEMORY_BLOCK GetMemoryBlock(LPVOID pOrigin)
 {
-    PMEMORY_BLOCK pBlock;
-#ifdef _M_X64
-    ULONG_PTR minAddr;
-    ULONG_PTR maxAddr;
-
     SYSTEM_INFO si;
     GetSystemInfo(&si);
-    minAddr = (ULONG_PTR)si.lpMinimumApplicationAddress;
-    maxAddr = (ULONG_PTR)si.lpMaximumApplicationAddress;
+
+    ULONG_PTR minAddr = (ULONG_PTR)si.lpMinimumApplicationAddress;
+    ULONG_PTR maxAddr = (ULONG_PTR)si.lpMaximumApplicationAddress;
 
     // pOrigin ± 512MB
-    if ((ULONG_PTR)pOrigin > MAX_MEMORY_RANGE && minAddr < (ULONG_PTR)pOrigin - MAX_MEMORY_RANGE)
-        minAddr = (ULONG_PTR)pOrigin - MAX_MEMORY_RANGE;
+    minAddr = (ULONG_PTR)pOrigin - MAX_MEMORY_RANGE < minAddr ? minAddr : (ULONG_PTR)pOrigin - MAX_MEMORY_RANGE;
+    maxAddr = (ULONG_PTR)pOrigin + MAX_MEMORY_RANGE > maxAddr ? maxAddr : (ULONG_PTR)pOrigin + MAX_MEMORY_RANGE - MEMORY_BLOCK_SIZE + 1;
 
-    if (maxAddr > (ULONG_PTR)pOrigin + MAX_MEMORY_RANGE)
-        maxAddr = (ULONG_PTR)pOrigin + MAX_MEMORY_RANGE;
+    return (PMEMORY_BLOCK)maxAddr;
+}
 
-    // Make room for MEMORY_BLOCK_SIZE bytes.
-    maxAddr -= MEMORY_BLOCK_SIZE - 1;
 #endif
 
     // Look the registered blocks for a reachable one.
