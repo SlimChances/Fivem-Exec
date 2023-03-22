@@ -893,46 +893,26 @@ const char* MH_StatusToString(MH_STATUS status)
 }
 
 
-bool Input::MenuKeyMonitor()
-{
-    HWND gameWindow = GetMainWindowHwnd(GetCurrentProcessId());
-    bool menuFlag = false;
+bool Input::MenuKeyMonitor() {
+    auto hwnd = GetMainWindowHwnd(GetCurrentProcessId());
+    bool menu_flag = false;
 
-    while (true)
-    {
-        if (Settings::GetInstance()->Menu)
-        {
-            menuFlag = true;
-            POINT mousePosition;
-            if (!GetCursorPos(&mousePosition))
-            {
-                // Handle error
-                return false;
+    while (true) {
+        if (Settings::GetInstance()->Menu) {
+            menu_flag = true;
+            POINT mouse_pos;
+            if (GetCursorPos(&mouse_pos) && ScreenToClient(hwnd, &mouse_pos)) {
+                auto& io = ImGui::GetIO();
+                io.MousePos = { static_cast<float>(mouse_pos.x), static_cast<float>(mouse_pos.y) };
+                io.MouseDown[0] = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
             }
-
-            if (!ScreenToClient(gameWindow, &mousePosition))
-            {
-                // Handle error
-                return false;
-            }
-
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos.x = static_cast<float>(mousePosition.x);
-            io.MousePos.y = static_cast<float>(mousePosition.y);
-
-            io.MouseDown[0] = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
-        }
-        else if (menuFlag)
-        {
-            // Reset mouse position and button state
-            ImGuiIO& io = ImGui::GetIO();
-            io.MousePos = ImVec2(-FLT_MAX, -FLT_MAX);
+        } else if (menu_flag) {
+            auto& io = ImGui::GetIO();
+            io.MousePos = { -FLT_MAX, -FLT_MAX };
             io.MouseDown[0] = false;
-            menuFlag = false;
+            menu_flag = false;
         }
-
-        // Wait for a short delay
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(10ms);
     }
 }
 
