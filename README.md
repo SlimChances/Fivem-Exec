@@ -91,12 +91,18 @@ modmap.exe FiveM_b2372_GTAProcess.exe d3d11.dll bypass.dll
  
 ## 💬 ・[Telegram](https://t.me/Serups)
 
-- Buy in Telegram for privacy | Discord private customer 
-- About [Private Cheat information](https://github.com/API-Connects/Detail)
+
+
+`BLUE TEXT FOR BUY`
+
+- Buy in Telegram for Privacy
+- More Here: [Private Cheat information](https://github.com/API-Connects/Detail)
 
 
 
- ### 🛒〢 `PRODUCT`
+
+
+ ### 🛒〢 `SHOP`
  
 <table>
 <tr>
